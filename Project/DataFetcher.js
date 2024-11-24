@@ -11,7 +11,7 @@ const DataFetcher = () => {
       console.log('Fetching data from API...');  // Add this line for debugging
       try {
         //const response = await fetch('http://localhost:3000/getItems');
-        const response = await fetch('http://ec2-51-27-116.us-east-2.compute.amazonaws.com:3000/getItems'); //mine
+        const response = await fetch('http://ec2-51-27-116.us-east-2.compute.amazonaws.com/api/getItems'); //mine
 
         if (!response.ok) {
           throw new Error('Network response was not ok');
