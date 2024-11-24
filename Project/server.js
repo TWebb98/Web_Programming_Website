@@ -16,8 +16,8 @@ const init = async () => {
     // MongoDB connection setup
     const client = new MongoClient('mongodb://localhost:27017', { useUnifiedTopology: true });
     await client.connect();
-    const db = client.db('Discussions');
-    const collection = db.collection('contributer');
+    const db = client.db('test_db');
+    const collection = db.collection('testCollection');
 
     // Route to get all items
     server.route({
