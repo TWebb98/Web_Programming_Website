@@ -1,124 +1,69 @@
-//server.js for discussion website
-const Hapi = require('@hapi/hapi');
-const mongoose = require('mongoose');
+import React, { useEffect, useState } from 'react';
 
-// Import the Discussion model
-const Discussion = require('./models/discussion');
+const DiscussionsPage = () => {
+  const [discussions, setDiscussions] = useState([]);
+  const [newDiscussion, setNewDiscussion] = useState({ title: '', content: '' });
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/projectdb', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+  // Fetch all discussions from the server
+  useEffect(() => {
+    fetch('/api/discussions')
+      .then((res) => res.json())
+      .then((data) => setDiscussions(data))
+      .catch((error) => console.error('Error fetching discussions:', error));
+  }, []);
 
-mongoose.connection.on('connected', () => {
-  console.log('Connected to MongoDB');
-});
-
-mongoose.connection.on('error', (err) => {
-  console.error('MongoDB connection error:', err);
-});
-
-// Create the Hapi server
-const init = async () => {
-  const server = Hapi.server({
-    port: 3000,
-    host: '0.0.0.0',
-  });
-
-  // Define routes
-  server.route([
-    // Get all discussions
-    {
-      method: 'GET',
-      path: '/api/discussions',
-      handler: async (request, h) => {
-        try {
-          const discussions = await Discussion.find();
-          return h.response(discussions).code(200);
-        } catch (err) {
-          console.error(err);
-          return h.response({ error: 'Failed to fetch discussions' }).code(500);
-        }
-      },
-    },
-    // Create a new discussion
-    {
+  // Submit a new discussion post
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    fetch('/api/discussions', {
       method: 'POST',
-      path: '/api/discussions',
-      handler: async (request, h) => {
-        try {
-          const { title, content, author } = request.payload;
-          const newDiscussion = new Discussion({
-            title,
-            content,
-            author,
-            createdAt: new Date(),
-          });
-          const savedDiscussion = await newDiscussion.save();
-          return h.response(savedDiscussion).code(201);
-        } catch (err) {
-          console.error(err);
-          return h.response({ error: 'Failed to create discussion' }).code(500);
-        }
-      },
-    },
-    // Add a reply to a discussion
-    {
-      method: 'POST',
-      path: '/api/discussions/{id}/replies',
-      handler: async (request, h) => {
-        try {
-          const { id } = request.params;
-          const { author, content } = request.payload;
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newDiscussion),
+    })
+    setNewDiscussion({ title: '', content: '' });
+    // Refresh the discussions list
+    fetch('/api/discussions')
+      .then((response) => response.json())
+      .then((data) => setDiscussions(data))
+      .catch((error) => console.error('Error fetching discussions:', error));
+  };
 
-          const discussion = await Discussion.findById(id);
-          if (!discussion) {
-            return h.response({ error: 'Discussion not found' }).code(404);
-          }
+  return (
+    <div>
+      <h1>Game Discussions</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Title"
+          value={newDiscussion.title}
+          onChange={(e) => setNewDiscussion({ ...newDiscussion, title: e.target.value })}
+        />
+        <textarea
+          placeholder="Content"
+          value={newDiscussion.content}
+          onChange={(e) => setNewDiscussion({ ...newDiscussion, content: e.target.value })}
+        ></textarea>
+        <button type="submit">Post</button>
+      </form>
 
-          discussion.replies.push({
-            author,
-            content,
-            createdAt: new Date(),
-          });
-          const updatedDiscussion = await discussion.save();
-          return h.response(updatedDiscussion).code(200);
-        } catch (err) {
-          console.error(err);
-          return h.response({ error: 'Failed to add reply' }).code(500);
-        }
-      },
-    },
-    // Get a specific discussion by ID
-    {
-      method: 'GET',
-      path: '/api/discussions/{id}',
-      handler: async (request, h) => {
-        try {
-          const { id } = request.params;
-          const discussion = await Discussion.findById(id);
-          if (!discussion) {
-            return h.response({ error: 'Discussion not found' }).code(404);
-          }
-          return h.response(discussion).code(200);
-        } catch (err) {
-          console.error(err);
-          return h.response({ error: 'Failed to fetch discussion' }).code(500);
-        }
-      },
-    },
-  ]);
-
-  // Start the server
-  await server.start();
-  console.log('Server running on %s', server.info.uri);
+      <div>
+        <h2>Previous Discussions</h2>
+        {discussions.map((discussion) => (
+          <div key={discussion._id} style={{ border: '1px solid #ddd', padding: '10px', margin: '10px 0' }}>
+            <h3>{discussion.title}</h3>
+            <p>{discussion.content}</p>
+            <p>
+              <strong>By:</strong> {discussion.author || 'Anonymous'}
+            </p>
+            <p>
+              <strong>Posted On:</strong> {new Date(discussion.createdAt).toLocaleString()}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
-// Handle server initialization errors
-process.on('unhandledRejection', (err) => {
-  console.error(err);
-  process.exit(1);
-});
 
-init();
+export default DiscussionsPage;
