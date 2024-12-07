@@ -1,0 +1,18 @@
+[{
+    "title": "Post 1",
+    "content": "This is a post. This is the main body of this post.",
+    "author": "Bubba",
+    "createAt": "2024-01-05",
+    "replies": [
+        {
+        "content": "This is a reply. This should be one of the replies.",
+        "author": "Bubba",
+        "createAt": "2024-01-06"
+        },
+        {
+            "content": "This is THE SECOND reply. This should be one of the replies.",
+            "author": "Jimmy",
+            "createAt": "2024-02-06"
+        }
+    ]
+}]
