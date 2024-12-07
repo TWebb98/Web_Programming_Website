@@ -1,16 +1,14 @@
 //Goes in Pages
 import React from 'react';
+import logo from '../assets/logo.png'; // Adjust the path as needed
 
 const Home = () => {
     return (
-        <div id='homeIntro'>
-            <h1>Vapour Discussions</h1>
-            <h2>Hello and welcome!</h2>
-            <p>
-                This is a small forum to discuss the latest and greastest (or not) games.
-                Go ahead and head over to the discussions tab at the very top to 
-                to chat with the "community"!
-            </p>
+        <div>
+            <h1>Home Page</h1>
+            <p>Welcome to Vapour Discussions, a discussion board for all your favorite games! ;) </p>
+            <img src={logo} alt="Vapour Logo" style={{ width: '600px', height: 'auto' }} />
+            <p>Simply click on the Discussions page to start your discussion!</p>
         </div>
     );
 };
