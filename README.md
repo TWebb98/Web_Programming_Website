@@ -30,4 +30,17 @@ host ip:  http://ec2-18-116-98-51.us-east-2.compute.amazonaws.com
               |DiscussionsPage.js
               |Home.js
       -server.js
-          
+
+
+
+          //tree
+          ├───build
+│   └───static
+│       ├───css
+│       ├───js
+│       └───media
+├───models
+├───public
+└───src
+    ├───assets
+    └───pages

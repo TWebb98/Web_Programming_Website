@@ -20,12 +20,31 @@ const DiscussionsPage = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newDiscussion),
     })
-    setNewDiscussion({ title: '', content: '' });
-    // Refresh the discussions list
-    fetch('/api/discussions')
+      .then(() => {
+        setNewDiscussion({ title: '', content: '' });
+        return fetch('/api/discussions'); // Refresh the discussions list
+      })
       .then((response) => response.json())
       .then((data) => setDiscussions(data))
       .catch((error) => console.error('Error fetching discussions:', error));
+  };
+
+  // Submit a reply to a discussion
+  const handleReplySubmit = (e, discussionId) => {
+    e.preventDefault();
+    const replyContent = e.target.reply.value;
+
+    fetch(`/api/discussions/${discussionId}/replies`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: replyContent, author: 'Anonymous' }),
+    })
+      .then(() => fetch('/api/discussions')) // Refresh the discussions list
+      .then((response) => response.json())
+      .then((data) => setDiscussions(data))
+      .catch((error) => console.error('Error submitting reply:', error));
+
+    e.target.reset(); // Reset the reply form
   };
 
   return (
@@ -74,6 +93,19 @@ const DiscussionsPage = () => {
             <p>
               <strong>Posted On:</strong> {new Date(discussion.createdAt).toLocaleString()}
             </p>
+            <div>
+              <h4>Replies:</h4>
+              {discussion.replies.map((reply, index) => (
+                <div key={index} style={{ marginLeft: '20px', border: '1px solid #ddd', padding: '10px' }}>
+                  <p><strong>{reply.author}:</strong> {reply.content}</p>
+                  <p><em>{new Date(reply.createdAt).toLocaleString()}</em></p>
+                </div>
+              ))}
+              <form onSubmit={(e) => handleReplySubmit(e, discussion._id)}>
+                <input type="text" name="reply" placeholder="Write a reply..." required />
+                <button type="submit">Reply</button>
+              </form>
+            </div>
           </div>
         ))}
       </div>
@@ -81,5 +113,5 @@ const DiscussionsPage = () => {
   );
 };
 
-
 export default DiscussionsPage;
+
