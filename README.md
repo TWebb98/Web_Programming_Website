@@ -45,4 +45,4 @@ This web app can be accessed by following the link located at the top of this do
 
 ## API Documentation
 
-<https://www.postman.com/altimetry-candidate-28122722/csci380-fall-2024/collection/ng1yvz0/csci380-final-project?action=share&creator=40263813>
+<https://documenter.getpostman.com/view/40263813/2sAYBbepF2>
